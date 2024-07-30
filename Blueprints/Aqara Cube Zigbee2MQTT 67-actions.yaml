@@ -1,0 +1,802 @@
+blueprint:
+  name: Aqara Cube Zigbee2MQTT
+  author: MyriadRising
+#  source_url:
+  description: Control anything using Aqara Magic Cube. (55 actions)
+  domain: automation
+# If you are reading this, you are brave.
+# I am sure that there are more options that could be added.
+# I have done my best to comment this script to make it as simple as possible.
+# One that I have (so far) chosen to skip is rotate_on_face. 
+#       Since the cube will return a 'side: ' in the json payload, this would not be difficult.
+# Every section should have an 'enable_' option. If I missed one, please let me know.
+# Please also keep in mind, the actions are parsed in the order they are listed. 
+#       I have not checked for conflicts.
+#       I have likely not prevented them well enough.
+#       If you find any, adding a 'not' or 'and' into a condition will likely fix that.
+# I wish you luck. And I would LOVE to know what you come up with!
+
+#Inspiration for this Blueprint from @Sir_goodenough and @Brent
+
+
+
+  input:    # 67 total actions
+    topic:          # Select which device to listen to. (cannot get drop-down-selector to produce 'friendly_name')
+      name: Magic Cube Topic
+      description: Select the Aqara Magic Cube device
+      default: "zigbee2mqtt/{Device_Name}"
+      selector:
+        text:
+          multiline: false
+          multiple: false
+    flip_at_all:              # Enable all 'flip' actions
+      name: ALL 90° or 180° flips
+      description: Enables or disables all flips.
+      default: false
+      selector:
+        boolean: {}
+    section_one:              # ALL 90s         (1 actions)
+      name: 90° flips
+      collapsed: true
+      input:
+        flip_every_90:
+          name: EVERY 90° flip
+          description: "Sets all 90° flips to the same action.
+
+            This cancels all specific 90 degrees functions.
+
+            e.g From side 1 to side 2 will be the same as from side 6 to side 2
+
+            all 80° flips will be the same."
+          default: false
+          selector:
+            boolean: {}
+        cube_flip_90: 
+          name: Flip cube 90 degrees
+          description: Action to run when cube flips 90 degrees. This only works if 'EVERY 90° flip' is toggled ON
+          default: []
+          selector:
+            action: {}
+    section_two:              # ALL 180s        (1 actions)
+      name: 180° flips
+      collapsed: true
+      input:
+        flip_every_180:
+          name: EVERY 180° flip
+          description: "Sets all 180° flips to the same action.
+
+            This cancels all specific 180 degrees functions
+
+            e.g From side 1 to side 6 will be the same as from side 5 to side 2
+
+            all 180° flips will be the same."
+          default: false
+          selector:
+            boolean: {}
+        cube_flip_180: 
+          name: Flip cube 180 degrees
+          description: Action to run when cube flips 180 degrees. This only works if 'EVERY 180° flip' is toggled ON
+          default: []
+          selector:
+            action: {}
+    section_three:            # From rand to x  (6 actions)
+      name: Semi-specific flips
+      collapsed: true
+      input:
+        flip_from_to_x:       # enable section
+          name: flip from x to \#
+          description: "Actions run when flipping from any non-specific face to specific face"
+          default: false
+          selector:
+            boolean: {}
+        cube_flip_1:            # x-1
+          name: Flip cube to side 1
+          description:
+            Action to run when cube flips to side 1. This only works if 'Flip
+            any' is toggled
+          default: []
+          selector:
+            action: {}
+        cube_flip_2:            # x-2
+          name: Flip cube to side 2
+          description:
+            Action to run when cube flips to side 2. This only works if 'Flip
+            any' is toggled
+          default: []
+          selector:
+            action: {}
+        cube_flip_3:            # x-3
+          name: Flip cube to side 3
+          description:
+            Action to run when cube flips to side 3. This only works if 'Flip
+            any' is toggled
+          default: []
+          selector:
+            action: {}
+        cube_flip_4:            # x-4
+          name: Flip cube to side 4
+          description:
+            Action to run when cube flips to side 4. This only works if 'Flip
+            any' is toggled
+          default: []
+          selector:
+            action: {}
+        cube_flip_5:            # x-5
+          name: Flip cube to side 5
+          description:
+            Action to run when cube flips to side 5. This only works if 'Flip
+            any' is toggled
+          default: []
+          selector:
+            action: {}
+        cube_flip_6:            # x-6
+          name: Flip cube to side 6
+          description:
+            Action to run when cube flips to side 6. This only works if 'Flip
+            any' is toggled
+          default: []
+          selector:
+            action: {}
+    section_four:             # From x to y     (30 actions)
+      name: Specific flips
+      collapsed: true
+      input:
+        flip_from_x_to_y:       # Enable section
+          name: "flip from # to #"
+          description: "Actions run when flipping from any specific face to specific face"
+          default: false
+          selector:
+            boolean: {}
+        one_to_two:
+          name: From side 1 to side 2
+          description: Action to run when cube goes from side 1 to side 2
+          default: []
+          selector:
+            action: {}
+        one_to_three:
+          name: From side 1 to side 3
+          description: Action to run when cube goes from side 1 to side 3
+          default: []
+          selector:
+            action: {}
+        one_to_four:
+          name: From side 1 to side 4
+          description: Action to run when cube goes from side 1 to side 4
+          default: []
+          selector:
+            action: {}
+        one_to_five:
+          name: From side 1 to side 5
+          description: Action to run when cube goes from side 1 to side 5
+          default: []
+          selector:
+            action: {}
+        one_to_six:
+          name: From side 1 to side 6
+          description: Action to run when cube goes from side 1 to side 6
+          default: []
+          selector:
+            action: {}
+        two_to_one:
+          name: From side 2 to side 1
+          description: Action to run when cube goes from side 2 to side 1
+          default: []
+          selector:
+            action: {}
+        two_to_three:
+          name: From side 2 to side 3
+          description: Action to run when cube goes from side 2 to side 3
+          default: []
+          selector:
+            action: {}
+        two_to_four:
+          name: From side 2 to side 4
+          description: Action to run when cube goes from side 2 to side 4
+          default: []
+          selector:
+            action: {}
+        two_to_five:
+          name: From side 2 to side 5
+          description: Action to run when cube goes from side 2 to side 5
+          default: []
+          selector:
+            action: {}
+        two_to_six:
+          name: From side 2 to side 6
+          description: Action to run when cube goes from side 2 to side 6
+          default: []
+          selector:
+            action: {}
+        three_to_one:
+          name: From side 3 to side 1
+          description: Action to run when cube goes from side 3 to side 1
+          default: []
+          selector:
+            action: {}
+        three_to_two:
+          name: From side 3 to side 2
+          description: Action to run when cube goes from side 3 to side 2
+          default: []
+          selector:
+            action: {}
+        three_to_four:
+          name: From side 3 to side 4
+          description: Action to run when cube goes from side 3 to side 4
+          default: []
+          selector:
+            action: {}
+        three_to_five:
+          name: From side 3 to side 5
+          description: Action to run when cube goes from side 3 to side 5
+          default: []
+          selector:
+            action: {}
+        three_to_six:
+          name: From side 3 to side 6
+          description: Action to run when cube goes from side 3 to side 6
+          default: []
+          selector:
+            action: {}
+        four_to_one:
+          name: From side 4 to side 1
+          description: Action to run when cube goes from side 4 to side 1
+          default: []
+          selector:
+            action: {}
+        four_to_two:
+          name: From side 4 to side 2
+          description: Action to run when cube goes from side 4 to side 2
+          default: []
+          selector:
+            action: {}
+        four_to_three:
+          name: From side 4 to side 3
+          description: Action to run when cube goes from side 4 to side 3
+          default: []
+          selector:
+            action: {}
+        four_to_five:
+          name: From side 4 to side 5
+          description: Action to run when cube goes from side 4 to side 5
+          default: []
+          selector:
+            action: {}
+        four_to_six:
+          name: From side 4 to side 6
+          description: Action to run when cube goes from side 4 to side 6
+          default: []
+          selector:
+            action: {}
+        five_to_one:
+          name: From side 5 to side 1
+          description: Action to run when cube goes from side 5 to side 1
+          default: []
+          selector:
+            action: {}
+        five_to_two:
+          name: From side 5 to side 2
+          description: Action to run when cube goes from side 5 to side 2
+          default: []
+          selector:
+            action: {}
+        five_to_three:
+          name: From side 5 to side 3
+          description: Action to run when cube goes from side 5 to side 3
+          default: []
+          selector:
+            action: {}
+        five_to_four:
+          name: From side 5 to side 4
+          description: Action to run when cube goes from side 5 to side 4
+          default: []
+          selector:
+            action: {}
+        five_to_six:
+          name: From side 5 to side 6
+          description: Action to run when cube goes from side 5 to side 6
+          default: []
+          selector:
+            action: {}
+        six_to_one:
+          name: From side 6 to side 1
+          description: Action to run when cube goes from side 6 to side 1
+          default: []
+          selector:
+            action: {}
+        six_to_two:
+          name: From side 6 to side 2
+          description: Action to run when cube goes from side 6 to side 2
+          default: []
+          selector:
+            action: {}
+        six_to_three:
+          name: From side 6 to side 3
+          description: Action to run when cube goes from side 6 to side 3
+          default: []
+          selector:
+            action: {}
+        six_to_four:
+          name: From side 6 to side 4
+          description: Action to run when cube goes from side 6 to side 4
+          default: []
+          selector:
+            action: {}
+        six_to_five:
+          name: From side 6 to side 5
+          description: Action to run when cube goes from side 6 to side 5
+          default: []
+          selector:
+            action: {}
+    section_five:             # Rotations       (14 actions)
+      name: Rotations
+      collapsed: true
+      input:
+        enable_rotate:        # Enable section
+          name: Enable 'rotate' actions
+          default: false
+          selector:
+            boolean: {}
+        rotate_any_side:
+          name: Rotate on any side
+          description:  "Rotate actions will be identical on all sides"
+          default: false
+          selector:
+            boolean: {}
+        rotate_any_right:
+          name: Rotate right
+          description: Action to run when cube rotates right
+          default: []
+          selector:
+            action: {}
+        rotate_any_left:
+          name: Rotate left
+          description: Action to run when cube rotates left
+          default: []
+          selector:
+            action: {}
+        right_on_one:
+          name: 1-Right
+          description: Side-1, right-turn
+          default: []
+          selector:
+            action: {}
+        left_on_one:
+          name: 1-Left
+          description: Side-1, left-turn
+          default: []
+          selector:
+            action: {}
+        right_on_two:
+          name: 2-Right
+          description: Side-2, right-turn
+          default: []
+          selector:
+            action: {}
+        left_on_two:
+          name: 2-Left
+          description: Side-2, left-turn
+          default: []
+          selector:
+            action: {}
+        right_on_three:
+          name: 3-Right
+          description: Side-3, right-turn
+          default: []
+          selector:
+            action: {}
+        left_on_three:
+          name: 3-Left
+          description: Side-3, left_turn
+          default: []
+          selector:
+            action: {}
+        right_on_four:
+          name: 4-Right
+          description: Side-4, right-turn
+          default: []
+          selector:
+            action: {}
+        left_on_four:
+          name: 4-Left
+          description: Side-4, left-turn
+          default: []
+          selector:
+            action: {}
+        right_on_five:
+          name: 5-Right
+          description: Side-5, right-turn
+          default: []
+          selector:
+            action: {}
+        left_on_five:
+          name: 5-Left
+          description: Side-5, left-turn
+          default: []
+          selector:
+            action: {}
+        right_on_six:
+          name: 6-Right
+          description: Side-6, right-turn
+          default: []
+          selector:
+            action: {}
+        left_on_six:
+          name: 6-Left
+          description: Side-6, left-turn
+          default: []
+          selector:
+            action: {}
+    section_six:              # Knocking        (7 actions)
+      name: Knocking
+      collapsed: true
+      input:
+        enable_knock:         # Enable section
+          name: Enabe 'knock' actions
+          default: false
+          selector:
+            boolean: {}
+        knock_any_side:
+          name: Knock on any side
+          description:
+            "Actions to run when knocking cube regardless of the side.
+
+            This cancels all specific 'knock' functions
+
+            e.g Knock on side 1 will be the same as knocking side 2"
+          default: false
+          selector:
+            boolean: {}
+        cube_knock_any:
+          name: Knock cube on any side
+          description: Action to run when knocking cube on any side.
+            For use when 'Knock on any side' is ON.
+          default: []
+          selector:
+            action: {}
+        one_to_one:
+          name: Knock - Side 1
+          description: |
+            Action to run when knocking on side 1.
+            For use when 'Knock on any side' is OFF.
+          default: []
+          selector:
+            action: {}
+        two_to_two:
+          name: Knock - Side 2
+          description: |
+            Action to run when knocking on side 2.
+            For use when 'Knock on any side' is OFF.
+          default: []
+          selector:
+            action: {}
+        three_to_three:
+          name: Knock - Side 3
+          description: |
+            Action to run when knocking on side 3.
+            For use when 'Knock on any side' is OFF.
+          default: []
+          selector:
+            action: {}
+        four_to_four:
+          name: Knock - Side 4
+          description: |
+            Action to run when knocking on side 4.
+            For use when 'Knock on any side' is OFF.
+          default: []
+          selector:
+            action: {}
+        five_to_five:
+          name: Knock - Side 5
+          description: |
+            Action to run when knocking on side 5.
+            For use when 'Knock on any side' is OFF.
+          default: []
+          selector:
+            action: {}
+        six_to_six:
+          name: Knock - Side 6
+          description: |
+            Action to run when knocking on side 6.
+            For use when 'Knock on any side' is OFF.
+          default: []
+          selector:
+            action: {}
+    section_seven:            # Slide           (7 actions)
+      name: Slide
+      collapsed: true
+      input:
+        enable_slide:         # Enable section
+          name: Enable 'slide' "actions
+          default: false
+          selector:
+            boolean: {}
+        slide_any_side:
+          name: Slide any side
+          description: "Actions to run when cube slides on any side.
+
+            This cancels all specific 'slide' functions
+
+            e.g Slide on side 1 will be the same as slide on side 2"
+          default: false
+          selector:
+            boolean: {}
+        cube_slide_any:
+          name: Slide cube on any side
+          description:
+            Action to run when cube slides on any slide. This only works if
+            'Slide any side' is toggled
+          default: []
+          selector:
+            action: {}
+        slide_on_one:
+          name: Slide - Side 1 up
+          description: Action to run when slides with Side 1 up
+          default: []
+          selector:
+            action: {}
+        slide_on_two:
+          name: Slide - Side 2 up
+          description: Action to run when slides with Side 2 up
+          default: []
+          selector:
+            action: {}
+        slide_on_three:
+          name: Slide - Side 3 up
+          description: Action to run when slides with Side 3 up
+          default: []
+          selector:
+            action: {}
+        slide_on_four:
+          name: Slide - Side 4 up
+          description: Action to run when slides with Side 4 up
+          default: []
+          selector:
+            action: {}
+        slide_on_five:
+          name: Slide - Side 5 up
+          description: Action to run when slides with Side 5 up
+          default: []
+          selector:
+            action: {}
+        slide_on_six:
+          name: Slide - Side 6 up
+          description: Action to run when slides with Side 6 up
+          default: []
+          selector:
+            action: {}
+    section_eight:            # Shake           (1 actions)
+      name: Shake
+      collapsed: true
+      input:
+        enable_shake:         # Enable section
+          name: Enable 'shake' action
+          default: false
+          selector:
+            boolean: {}
+        cube_shake:
+          name: Shake cube
+          description: Action to run when you shake the cube
+          default: []
+          selector:
+            action: {}
+mode: restart
+max_exceeded: silent
+trigger:            # Currently set manually, cannot get drop-down-selector to work
+  - platform: mqtt
+    topic: !input topic
+action:
+  - variables:      # All Variables that are tested for under 'conditions' must be listed here
+      command: "{% if trigger.payload_json.action is defined %}\n
+        {{ trigger.payload_json.action}}\n
+        {% else %}\n
+        \"none\" \n
+        {% endif %}\n"
+      flip_at_all: !input flip_at_all                           # fromUser = boolean
+      flip_from_to_x: !input flip_from_to_x                     # fromUser = boolean
+      flip_from_x_to_y: !input flip_from_x_to_y                 # fromUser = boolean
+      flip_every_90: !input flip_every_90                       # fromUser = boolean
+      flip_every_180: !input flip_every_180                     # fromUser = boolean
+      flip_degrees: "\n{% if command == \"flip90\" %} 90\n\n
+        \n{% elif command == \"flip180\" %} 180\n\n
+        {% endif %}\n"
+      slide_any_side: !input slide_any_side                     # fromUser = boolean
+      knock_any_side: !input knock_any_side                     # fromUser = boolean
+      rotate_any_side: !input rotate_any_side                   # fromUser = boolean
+      from_face:
+        "\n{% if command == \"flip90\" or command == \"flip180\" %}\n\n  {{ trigger.payload_json.action_from_side | int }}\n\n{%
+        endif %}\n"
+      to_face: "{% if trigger.payload_json.side is number %}\n
+        {{ trigger.payload_json.side | int(0) }}\n
+        {% else %}\n
+        0\n
+        {% endif %}\n"
+      activated_face:                                           # same as to_face
+        "\n{% if trigger.payload_json.action is defined %}\n\n
+        {% if trigger.payload_json.side == 1 %} 1\n\n
+        {% elif trigger.payload_json.side == 2 %} 2\n\n
+        {% elif trigger.payload_json.side == 3 %} 3\n\n
+        {% elif trigger.payload_json.side == 4 %} 4\n\n
+        {% elif trigger.payload_json.side == 5 %} 5\n\n
+        {% elif trigger.payload_json.side == 6 %} 6\n\n
+        {% endif %}\n\n
+
+        {% elif command == 'flip' %}\n\n
+
+        {{ trigger.event.data.args.activated_face | int }}\n\n
+
+        {% endif %}\n"
+      relative_degrees:                                         # unused (amount of rotation) 
+        "\n{% if command == \"rotate_right\" or command == \"rotate_left\"
+        %}\n\n  {{ trigger.payload_json.action_angle | float }}\n\n{% endif %}\n"
+      enable_rotate: !input enable_rotate                       # fromUser = boolean
+      enable_knock: !input enable_knock                         # fromUser = boolean
+      enable_slide: !input enable_slide                         # fromUser = boolean
+      enable_shake: !input enable_shake                         # fromUser = boolean
+  - choose:
+      - conditions: "{{ flip_at_all and command == 'flip90' and flip_every_90 }}"
+        sequence: !input cube_flip_90
+      - conditions: "{{ flip_at_all and command == 'flip180' and flip_every_180 }}"
+        sequence: !input cube_flip_180
+      - conditions: "{{ flip_at_all and (command == 'flip90' or command == 'flip180') and flip_from_to_x }}"
+        sequence:
+          - choose:
+              - conditions: "{{ to_face == 1 }}"
+                sequence: !input cube_flip_1
+              - conditions: "{{ to_face == 2 }}"
+                sequence: !input cube_flip_2
+              - conditions: "{{ to_face == 3 }}"
+                sequence: !input cube_flip_3
+              - conditions: "{{ to_face == 4 }}"
+                sequence: !input cube_flip_4
+              - conditions: "{{ to_face == 5 }}"
+                sequence: !input cube_flip_5
+              - conditions: "{{ to_face == 6 }}"
+                sequence: !input cube_flip_6
+      - conditions: "{{ flip_at_all and (command == 'flip90' or command == 'flip180') and flip_from_x_to_y }}"
+        sequence:
+          - choose:
+                # 1-x
+              - conditions: "{{ from_face == 1 and to_face == 2 }}"
+                sequence: !input one_to_two
+              - conditions: "{{ from_face == 1 and to_face == 3 }}"
+                sequence: !input one_to_three
+              - conditions: "{{ from_face == 1 and to_face == 4 }}"
+                sequence: !input one_to_four
+              - conditions: "{{ from_face == 1 and to_face == 5 }}"
+                sequence: !input one_to_five
+              - conditions: "{{ from_face == 1 and to_face == 6 }}"
+                sequence: !input one_to_six
+                # 2-x
+              - conditions: "{{ from_face == 2 and to_face == 1 }}"
+                sequence: !input two_to_one
+              - conditions: "{{ from_face == 2 and to_face == 3 }}"
+                sequence: !input two_to_three
+              - conditions: "{{ from_face == 2 and to_face == 4 }}"
+                sequence: !input two_to_four
+              - conditions: "{{ from_face == 2 and to_face == 5 }}"
+                sequence: !input two_to_five
+              - conditions: "{{ from_face == 2 and to_face == 6 }}"
+                sequence: !input two_to_six
+                # 3-x
+              - conditions: "{{ from_face == 3 and to_face == 1 }}"
+                sequence: !input three_to_one
+              - conditions: "{{ from_face == 3 and to_face == 2 }}"
+                sequence: !input three_to_two
+              - conditions: "{{ from_face == 3 and to_face == 4 }}"
+                sequence: !input three_to_four
+              - conditions: "{{ from_face == 3 and to_face == 5 }}"
+                sequence: !input three_to_five
+              - conditions: "{{ from_face == 3 and to_face == 6 }}"
+                sequence: !input three_to_six
+                # 4-x
+              - conditions: "{{ from_face == 4 and to_face == 1 }}"
+                sequence: !input four_to_one
+              - conditions: "{{ from_face == 4 and to_face == 2 }}"
+                sequence: !input four_to_two
+              - conditions: "{{ from_face == 4 and to_face == 3 }}"
+                sequence: !input four_to_three
+              - conditions: "{{ from_face == 4 and to_face == 5 }}"
+                sequence: !input four_to_five
+              - conditions: "{{ from_face == 4 and to_face == 6 }}"
+                sequence: !input four_to_six
+                # 5-x
+              - conditions: "{{ from_face == 5 and to_face == 1 }}"
+                sequence: !input five_to_one
+              - conditions: "{{ from_face == 5 and to_face == 2 }}"
+                sequence: !input five_to_two
+              - conditions: "{{ from_face == 5 and to_face == 3 }}"
+                sequence: !input five_to_three
+              - conditions: "{{ from_face == 5 and to_face == 4 }}"
+                sequence: !input five_to_four
+              - conditions: "{{ from_face == 5 and to_face == 5 }}"
+                sequence: !input five_to_six
+                # 6-x
+              - conditions: "{{ from_face == 6 and to_face == 1 }}"
+                sequence: !input six_to_one
+              - conditions: "{{ from_face == 6 and to_face == 2 }}"
+                sequence: !input six_to_two
+              - conditions: "{{ from_face == 6 and to_face == 3 }}"
+                sequence: !input six_to_three
+              - conditions: "{{ from_face == 6 and to_face == 4 }}"
+                sequence: !input six_to_four
+              - conditions: "{{ from_face == 6 and to_face == 5 }}"
+                sequence: !input six_to_five
+      - conditions: "{{ enable_rotate and (command == 'rotate_right' or command == 'rotate_left') }}"
+        sequence:
+          - choose:
+              - conditions: "{{ rotate_any_side and command == 'rotate_right' }}"
+                sequence: !input rotate_any_right
+              - conditions: "{{ rotate_any_side and command == 'rotate_left' }}"
+                sequence: !input rotate_any_left
+              - conditions: "{{ not rotate_any_side and command == 'rotate_right' }}"
+                sequence:
+                  - choose:
+                      - conditions: "{{ activated_face == 1 }}"
+                        sequence: !input right_on_one
+                      - conditions: "{{ activated_face == 2 }}"
+                        sequence: !input right_on_two
+                      - conditions: "{{ activated_face == 3 }}"
+                        sequence: !input right_on_three
+                      - conditions: "{{ activated_face == 4 }}"
+                        sequence: !input right_on_four
+                      - conditions: "{{ activated_face == 5 }}"
+                        sequence: !input right_on_five
+                      - conditions: "{{ activated_face == 6 }}"
+                        sequence: !input right_on_six
+              - conditions: "{{ not rotate_any_side and command == 'rotate_left' }}"
+                sequence:
+                  - choose:
+                      - conditions: "{{ activated_face == 1 }}"
+                        sequence: !input left_on_one
+                      - conditions: "{{ activated_face == 2 }}"
+                        sequence: !input left_on_two
+                      - conditions: "{{ activated_face == 3 }}"
+                        sequence: !input left_on_three
+                      - conditions: "{{ activated_face == 4 }}"
+                        sequence: !input left_on_four
+                      - conditions: "{{ activated_face == 5 }}"
+                        sequence: !input left_on_five
+                      - conditions: "{{ activated_face == 6 }}"
+                        sequence: !input left_on_six
+      - conditions: "{{ enable_knock and command == 'tap' }}"
+        sequence:
+          - choose:
+              - conditions: "{{ knock_any_side }}"
+                sequence: !input cube_knock_any
+              - conditions: "{{ not knock_any_side }}"
+                sequence:
+                  - choose:
+                      - conditions: "{{ activated_face == 1 }}"
+                        sequence: !input one_to_one
+                      - conditions: "{{ activated_face == 2 }}"
+                        sequence: !input two_to_two
+                      - conditions: "{{ activated_face == 3 }}"
+                        sequence: !input three_to_three
+                      - conditions: "{{ activated_face == 4 }}"
+                        sequence: !input four_to_four
+                      - conditions: "{{ activated_face == 5 }}"
+                        sequence: !input five_to_five
+                      - conditions: "{{ activated_face == 6 }}"
+                        sequence: !input six_to_six
+      - conditions: "{{ enable_slide and command == 'slide'}}"
+        sequence:
+          - choose:
+              - conditions: "{{ slide_any_side }}"
+                sequence: !input cube_slide_any
+              - conditions: "{{ not slide_any_side }}"
+                sequence:
+                  - choose:
+                      - conditions: "{{ activated_face == 1 }}"
+                        sequence: !input slide_on_one
+                      - conditions: "{{ activated_face == 2 }}"
+                        sequence: !input slide_on_two
+                      - conditions: "{{ activated_face == 3 }}"
+                        sequence: !input slide_on_three
+                      - conditions: "{{ activated_face == 4 }}"
+                        sequence: !input slide_on_four
+                      - conditions: "{{ activated_face == 5 }}"
+                        sequence: !input slide_on_five
+                      - conditions: "{{ activated_face == 6 }}"
+                        sequence: !input slide_on_six
+      - conditions: "{{ enable_shake and command == 'shake' }}"
+        sequence: !input cube_shake
